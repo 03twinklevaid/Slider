@@ -7,7 +7,7 @@ import Popup from './PopupScreen';
 import {showPopup} from '../Actions';
 import {hidePopup} from '../Actions';
 import {selectCategory} from '../Actions';
-import {onSliderChange} from '../Actions';
+import {onPriceSliderChange} from '../Actions';
 import {showNext} from '../Actions';
 import {showPrevious} from '../Actions';
 import {Range as RangeSlider, Handle, createSliderWithTooltip}  from 'rc-slider';
@@ -72,14 +72,14 @@ class Home extends Component {
                     {
                         products.length ?
                         <Range
-                        defaultValue={[Math.floor((min+max)/4), Math.floor(3*((min+max)/4))]}
+                        defaultValue={[min,max]}
                         min={min}
                         max={max}
                         pushable={10}
                         Tooltip={true}
                         handle={handle}
                         marks={{ [min]:min, [Math.floor((min+max)/4)]:Math.floor((min+max)/4), [Math.floor((min+max)/2)]:Math.floor(min+max/2), [Math.floor(3*((min+max)/4))]:Math.floor(3*((min+max)/4)), [max]:max}}
-                        onChange={(event) => this.props.onSliderChange(event)}
+                        onAfterChange={(event) => this.props.onPriceSliderChange (event)}
                     />
                      : null
                     }
@@ -130,23 +130,22 @@ class Home extends Component {
 }
 const mapStateToProps = state => {
     var filteredproducts = state.products;
-    var filteredByPrice = state.products;
     var categoriesarr = [...new Set(state.products.map((item)=>{
         return item.category;
     }))]
 
-    console.log('state.pricefilter[1]', state.pricefilter[1], state.pricefilter[0])
+    console.log('state.pricefilter', state.pricefilter[0], state.pricefilter[1])
 
     if (state.selectCategory.selectedCategory != '') {
         filteredproducts = state.products.filter((item) => {
-            return item.category === state.selectCategory.selectedCategory && state.pricefilter[0] <= item.price && state.pricefilter[1] >= item.price
+            return item.category === state.selectCategory.selectedCategory
         })
     }
-    // if (state.pricefilter.length) {
-    //     filteredByPrice = state.products.filter((item)=> {
-    //         return state.pricefilter[0] <= item.price && state.pricefilter[1] >= item.price;
-    //     })
-    // }
+    if (state.pricefilter.length) {
+        filteredproducts = filteredproducts.filter((item)=> {
+            return state.pricefilter[0] <= item.price && state.pricefilter[1] >= item.price;
+        })
+    }
     return (
         {
         products: filteredproducts,
@@ -165,7 +164,7 @@ const mapDispatchToProps = {
     showNext,
     showPrevious,
     selectCategory,
-    onSliderChange
+    onPriceSliderChange
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

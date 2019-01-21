@@ -35,7 +35,7 @@ export const selectCategory = (payload) => {
     item: payload
   }
 }
-export const onSliderChange = (payload) => {
+export const onPriceSliderChange = (payload) => {
   return {
     type: "PRICE_FILTER",
     item: payload
